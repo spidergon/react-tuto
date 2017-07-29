@@ -7,11 +7,13 @@ class Game extends Component {
         super();
         this.state = {
             history: [{
+                rank: 0,
                 squares: Array(9).fill(null),
-                location: {x:0, y:0},
+                location: { x: 0, y: 0 }
             }],
             stepNumber: 0,
             xIsNext: true,
+            historySorted: true
         };
     }
 
@@ -27,19 +29,35 @@ class Game extends Component {
         squares[i] = this.state.xIsNext ? 'X' : 'O';
         this.setState({
             history: history.concat([{
+                rank: history.length,
                 squares: squares,
-                location: {x: i % 3 + 1, y: Math.floor(i / 3) + 1},
+                location: { x: i % 3 + 1, y: Math.floor(i / 3) + 1 }
             }]),
             stepNumber: history.length,
-            xIsNext: !this.state.xIsNext,
+            xIsNext: !this.state.xIsNext
         });
     }
 
     jumpTo(step) {
         this.setState({
             stepNumber: step,
-            xIsNext: (step % 2) === 0,
+            xIsNext: (step % 2) === 0
         });
+    }
+
+    sort() {
+        const history = this.state.history.slice();
+        if (history.length > 1) {
+            if (this.state.historySorted) { // sort descending
+                history.sort((a, b) => b.rank - a.rank);
+            } else { // sort ascending
+                history.sort((a, b) => a.rank - b.rank);
+            }
+            this.setState({
+                history: history,
+                historySorted: !this.state.historySorted
+            });
+        }
     }
 
     render() {
@@ -48,7 +66,7 @@ class Game extends Component {
         const winner = calculateWinner(current.squares);
 
         const moves = history.map((step, move) => {
-            const desc = move ? 'Move #' + move + ' (' + step.location.x + ',' + step.location.y + ')' : 'Game start';
+            const desc = step.rank > 0 ? 'Move #' + step.rank + ' (' + step.location.x + ',' + step.location.y + ')' : 'Game start';
             return (
                 <li key={move}>
                     <a href="#history" onClick={() => this.jumpTo(move)} className={move === this.state.stepNumber ? 'strong-state' : null}>{desc}</a>
@@ -73,6 +91,7 @@ class Game extends Component {
                 </div>
                 <div className="game-info">
                     <div>{status}</div>
+                    <a href="#sort" onClick={() => this.sort()}>(sort)</a>
                     <ol>{moves}</ol>
                 </div>
             </div>
