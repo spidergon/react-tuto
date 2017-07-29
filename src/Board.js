@@ -11,7 +11,8 @@ function Board(props) {
                             let index = j + i * 3;
                             return (
                                 <Square key={index}
-                                    value={props.squares[index]}
+                                    value={props.squares[index].value}
+                                    isWinner={props.squares[index].isWinner}
                                     onClick={() => props.onClick(index)}
                                 />
                             );

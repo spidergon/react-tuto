@@ -8,7 +8,10 @@ class Game extends Component {
         this.state = {
             history: [{
                 rank: 0,
-                squares: Array(9).fill(null),
+                squares: Array(9).fill({
+                    'value': null,
+                    'isWinner': false
+                }),
                 location: { x: 0, y: 0 }
             }],
             stepNumber: 0,
@@ -21,12 +24,12 @@ class Game extends Component {
         const history = this.state.history.slice(0, this.state.stepNumber + 1);
         const current = history[history.length - 1];
         const squares = current.squares.slice();
-
-        if (calculateWinner(squares) || squares[i]) {
+        
+        if (calculateWinner(squares) || squares[i].value) {
             return;
         }
 
-        squares[i] = this.state.xIsNext ? 'X' : 'O';
+        squares[i] = {'value': this.state.xIsNext ? 'X' : 'O', 'isWinner': squares[i].isWinner};
         this.setState({
             history: history.concat([{
                 rank: history.length,
@@ -112,8 +115,11 @@ function calculateWinner(squares) {
     ];
     for (let i = 0; i < lines.length; i++) {
         const [a, b, c] = lines[i];
-        if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-            return squares[a];
+        if (squares[a].value && squares[a].value === squares[b].value && squares[a].value === squares[c].value) {
+            squares[a] = {'value': squares[a].value, 'isWinner': true};
+            squares[b] = {'value': squares[a].value, 'isWinner': true};
+            squares[c] = {'value': squares[a].value, 'isWinner': true};
+            return squares[a].value;
         }
     }
     return null;

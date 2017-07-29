@@ -44,3 +44,7 @@
 .strong-state {
   font-weight: bold;
 }
+
+.square.winner {
+  color:red;
+}
